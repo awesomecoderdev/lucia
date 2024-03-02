@@ -1,7 +1,7 @@
 import { validateRequest } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export default async function AuthorizedMiddleware({
+export default async function RedirectIfUnauthorized({
 	children,
 }: Readonly<{
 	children: React.ReactNode;

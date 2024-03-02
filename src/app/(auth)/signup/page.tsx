@@ -3,11 +3,9 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { Argon2id } from "oslo/password";
 import { cookies } from "next/headers";
-import { lucia, validateRequest } from "@/lib/auth";
+import { lucia } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Form } from "@/lib/form";
-import { generateId } from "lucia";
-import { SqliteError } from "better-sqlite3";
 
 import type { ActionResult } from "@/lib/form";
 
@@ -56,21 +54,16 @@ async function signup(_: any, formData: FormData): Promise<ActionResult> {
 	}
 
 	const hashedPassword = await new Argon2id().hash(password);
-	const userId = generateId(15);
 
 	try {
-		// db.prepare(
-		// 	"INSERT INTO user (id, username, password) VALUES(?, ?, ?)"
-		// ).run(userId, username, hashedPassword);
-		await db.user.create({
+		const user = await db.user.create({
 			data: {
-				id: userId,
 				password: hashedPassword,
 				username: username,
 			},
 		});
 
-		const session = await lucia.createSession(userId, {});
+		const session = await lucia.createSession(user.id, {});
 		const sessionCookie = lucia.createSessionCookie(session.id);
 		cookies().set(
 			sessionCookie.name,
@@ -78,11 +71,7 @@ async function signup(_: any, formData: FormData): Promise<ActionResult> {
 			sessionCookie.attributes
 		);
 	} catch (e) {
-		if (e instanceof SqliteError && e.code === "SQLITE_CONSTRAINT_UNIQUE") {
-			return {
-				error: "Username already used",
-			};
-		}
+		console.log("e", e);
 		return {
 			error: "An unknown error occurred",
 		};

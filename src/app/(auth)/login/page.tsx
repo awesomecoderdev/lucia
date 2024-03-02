@@ -3,11 +3,10 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { Argon2id } from "oslo/password";
 import { cookies } from "next/headers";
-import { lucia, validateRequest } from "@/lib/auth";
+import { lucia } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Form } from "@/lib/form";
 
-import type { DatabaseUser } from "@/lib/db";
 import type { ActionResult } from "@/lib/form";
 
 export default async function Page() {
@@ -51,10 +50,6 @@ async function login(_: any, formData: FormData): Promise<ActionResult> {
 			error: "Invalid password",
 		};
 	}
-
-	// const existingUser = db
-	// 	.prepare("SELECT * FROM user WHERE username = ?")
-	// 	.get(username) as DatabaseUser | undefined;
 	const existingUser = await db.user.findUnique({
 		where: {
 			username: username,
