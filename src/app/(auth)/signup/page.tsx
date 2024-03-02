@@ -12,10 +12,6 @@ import { SqliteError } from "better-sqlite3";
 import type { ActionResult } from "@/lib/form";
 
 export default async function Page() {
-	const { user } = await validateRequest();
-	if (user) {
-		return redirect("/");
-	}
 	return (
 		<>
 			<h1>Create an account</h1>

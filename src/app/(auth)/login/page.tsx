@@ -11,10 +11,6 @@ import type { DatabaseUser } from "@/lib/db";
 import type { ActionResult } from "@/lib/form";
 
 export default async function Page() {
-	const { user } = await validateRequest();
-	if (user) {
-		return redirect("/");
-	}
 	return (
 		<>
 			<h1>Sign in</h1>
